@@ -34,20 +34,26 @@ app.UseEndpoints(endpoint =>
 });
 
 var backgroundJob = app.Services.GetRequiredService<IBackgroundJobClient>();
+//var backgroundJob = app.Services.GetRequiredService<ILogger<Program>>();
 
 //یک job فوری
-backgroundJob.Enqueue(() => Console.WriteLine("hello reza"));
+
+backgroundJob.Enqueue(() => ConsoleHelper.WriteMessage("reza", ConsoleColor.Green));
+
+
+
+
 //یک
 //job
 //تکرار شونده
-RecurringJob.AddOrUpdate("رضا دهقانی", () => Console.WriteLine("Recurring job executed"), Cron.Minutely);
+RecurringJob.AddOrUpdate("reza", () => ConsoleHelper.WriteMessage("salam reza", ConsoleColor.Red), Cron.Minutely);
 //یک job
 //زمان بندی شده
-backgroundJob.Schedule(() => Console.WriteLine("Scheduled job executed"), TimeSpan.FromMinutes(5));
+backgroundJob.Schedule(() => ConsoleHelper.WriteMessage("salam arsalan",ConsoleColor.Blue),TimeSpan.FromSeconds(50));
 //یک job بعد از 
 // اینکه یک job به پایان رسید
-var parentJobId = backgroundJob.Enqueue(() => Console.WriteLine("Parent job executed"));
-backgroundJob.ContinueWith(parentJobId, () => Console.WriteLine("Continuation job executed"));
+var parentJobId = backgroundJob.Enqueue(() =>ConsoleHelper.WriteMessage("salam fatehei",ConsoleColor.Green));
+backgroundJob.ContinueJobWith(parentJobId, () => ConsoleHelper.WriteMessage("salam iran",ConsoleColor.Magenta));
 
 
 app.Run();
@@ -59,3 +65,12 @@ app.Run();
 
 
 
+public static class ConsoleHelper
+{
+    public static void WriteMessage(string message, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(message);
+        Console.ResetColor();
+    }
+}
